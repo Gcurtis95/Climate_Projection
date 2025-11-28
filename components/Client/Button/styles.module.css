@@ -1,0 +1,26 @@
+.ButtonContainer{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 30%;
+
+}
+.ErrorMessage{
+    color: red;
+    height: 40px;
+    text-align: center;
+}
+.EnterButton{
+    width: 100px;
+    height: 50px;
+
+  
+
+}
+.ErrorContainer{
+    height: 100px;
+    width: 270px;
+    display: flex;
+    align-items: center;
+}
