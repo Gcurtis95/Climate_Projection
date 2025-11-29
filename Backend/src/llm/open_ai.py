@@ -74,22 +74,42 @@ def rag_query(projections, address):
 
 
 
-def summarise(rag_result, web_result):
+def summarise(rag_result, web_result, projections, address):
 
     prompt = f"""
+    <Context>
+    Here are the projected and baseline data form google earth engine {projections}, 
+    Here is the data returned from the gemini web search {web_result} for NASA/GDDP-CMIP6 dataset in {address}. 
 
+    Here the is rag and vector database
+    {rag_result},
+
+    <Context>
     """
 
-    system_prompt = f"""
+    system_prompt = f""" You are a climate-science research assistant specialised in interpreting Google Earth Engine outputs from the NASA/GDDP-CMIP6 dataset.
+    You will receive:
+                a web search anaylisis based on the data. 
+                a retrieval based search from a vector data base full of open ccess research papers on the subject.
+                A location (address and coordinates)
+                NASA/GDDP-CMIP6 projection values for a specific month and year
+                Historical baselines (1950–2014) for the same region
+                Core climate variables (e.g., tas, tasmax, pr, humidities, wind, radiative fluxes)
+    your job is to:
+                summarise all of this infomation into a response that indicates the potential impacts on the given region for the given date
+
+
 
     """
 
     model = "gpt-5.1"
 
+    summerised_analysis = open_ai_get_completion(prompt, system_prompt, model)
+    print(summerised_analysis.output_text)
 
     
 
-    return open_ai_get_completion(prompt, system_prompt, model)
+    return summerised_analysis
 
 
 

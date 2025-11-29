@@ -31,6 +31,9 @@ async def climate_projection(data: Data):
         final_output = await agent_actions(projections, location_date_data["address"])
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+    
+
+    return final_output
 
   
 
