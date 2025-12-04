@@ -9,7 +9,7 @@ export async function GET(request: Request){
     const longitude = searchParams.get("lon");
     const latitude = searchParams.get("lat");
 
-    const url = `https://api.mapbox.com/search/geocode/v6/reverse?longitude=${longitude}&latitude=${latitude}&access_token=${process.env.NEXT_PUBLIC_MAPBOX}&types=place`
+    const url = `https://api.mapbox.com/search/geocode/v6/reverse?longitude=${longitude}&latitude=${latitude}&access_token=${process.env.NEXT_PUBLIC_MAPBOX}`
 
     const response = await fetch(url)
 

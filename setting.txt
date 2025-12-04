@@ -1,0 +1,104 @@
+fast noise 
+
+const n1Freq = uniform(1)
+const n1Offset1 = uniform(4)
+const n1Offset2 = uniform(15)
+const n1Oscillation1 = uniform(10)
+const n1Oscillation2 = uniform(7)
+const n1Contribution1 = uniform(0.3)
+const n1Contribution2 = uniform(0.57)
+
+const n2Freq = uniform(2)
+const n2Offset1 = uniform(22)
+const n2Offset2 = uniform(32)
+const n2Oscillation1 = uniform(17)
+const n2Oscillation2 = uniform(12)
+const n2Contribution1 = uniform(0.21)
+const n2Contribution2 = uniform(0.26)
+
+const n3Freq = uniform(3)
+const n3Offset1 = uniform(2)
+const n3Offset2 = uniform(14)
+const n3Oscillation1 = uniform(100)
+const n3Oscillation2 = uniform(100)
+const n3Contribution1 = uniform(0.02)
+const n3Contribution2 = uniform(0.04)
+
+const rotAngle = uniform(1)
+const uvOffset = uniform(vec2(0.0, 0.36))
+
+const o1Contribution = uniform(100)
+const o2Contribution = uniform(500)
+
+
+
+
+
+slow 
+
+const n1Freq = uniform(1)
+const n1Offset1 = uniform(4)
+const n1Offset2 = uniform(15)
+const n1Oscillation1 = uniform(10)
+const n1Oscillation2 = uniform(10)
+const n1Contribution1 = uniform(0.3)
+const n1Contribution2 = uniform(0.1)
+
+const n2Freq = uniform(2
+)
+const n2Offset1 = uniform(22)
+const n2Offset2 = uniform(32)
+const n2Oscillation1 = uniform(17)
+const n2Oscillation2 = uniform(12)
+const n2Contribution1 = uniform(0.21)
+const n2Contribution2 = uniform(0.26)
+
+const n3Freq = uniform(3)
+const n3Offset1 = uniform(2)
+const n3Offset2 = uniform(14)
+const n3Oscillation1 = uniform(100)
+const n3Oscillation2 = uniform(100)
+const n3Contribution1 = uniform(0.1)
+const n3Contribution2 = uniform(0.04)
+
+const rotAngle = uniform(0)
+const uvOffset = uniform(vec2(1, 0.36))
+
+const o1Contribution = uniform(5)
+const o2Contribution = uniform(10)
+
+
+
+
+website 
+
+const n1Freq = uniform(1)
+const n1Offset1 = uniform(4)
+const n1Offset2 = uniform(15)
+const n1Oscillation1 = uniform(1)
+const n1Oscillation2 = uniform(1)
+const n1Contribution1 = uniform(0.3)
+const n1Contribution2 = uniform(0.1)
+
+const n2Freq = uniform(2
+)
+const n2Offset1 = uniform(22)
+const n2Offset2 = uniform(32)
+const n2Oscillation1 = uniform(1)
+const n2Oscillation2 = uniform(1)
+const n2Contribution1 = uniform(0.21)
+const n2Contribution2 = uniform(0.26)
+
+const n3Freq = uniform(10)
+const n3Offset1 = uniform(10)
+const n3Offset2 = uniform(10)
+const n3Oscillation1 = uniform(5)
+const n3Oscillation2 = uniform(1)
+const n3Contribution1 = uniform(0.1)
+const n3Contribution2 = uniform(0.04)
+
+const rotAngle = uniform(0)
+const uvOffset = uniform(vec2(1, 0.36))
+
+const o1Contribution = uniform(10)
+const o2Contribution = uniform(10)

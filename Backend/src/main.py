@@ -2,6 +2,7 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from earth_engine.earth_engine import google_earth_engine
 from llm.llm_main import agent_actions
+import json
 
 
 app = FastAPI()

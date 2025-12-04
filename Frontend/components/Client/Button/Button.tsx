@@ -3,6 +3,7 @@
 import styles from './styles.module.css'
 import {useState, useEffect} from 'react'
 import { PickerValue } from 'react-mobile-picker'
+import { useRouter } from 'next/navigation'
 
 interface userSelect {
     location: number[]
@@ -10,12 +11,8 @@ interface userSelect {
 }
 export default function Button({location, date} : userSelect){
 
-
+    const router = useRouter()
     const [isItWater, setIsItWater] = useState<boolean>();
-
-
-
-
 
     async function handleFetch(location: number[], date: PickerValue): Promise<void> {
         const [lon, lat] = location
@@ -38,11 +35,7 @@ export default function Button({location, date} : userSelect){
 
 
         if(!jsonWaterResponse.result.water){
-
-            const climateReponse = await fetch(`/api/climate?lon=${lon}&lat=${lat}&month=${month}&year=${year}&address=${address}`);
-            const json = await climateReponse.json();
-
-            console.log(json.result)
+            router.push(`/visualisation/?lon=${lon}&lat=${lat}&month=${month}&year=${year}&address=${address}`) 
         }
 
     }

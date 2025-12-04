@@ -8,7 +8,9 @@ async def agent_actions(projections, address):
     rag_task = async_rag_query(projections, address)
     web_task = async_web_search(projections, address)
     rag_result, web_result = await asyncio.gather(rag_task, web_task)
-    summarise(rag_result, web_result, projections, address)
+
+    
+    return summarise(rag_result, web_result, projections, address)
 
 
 

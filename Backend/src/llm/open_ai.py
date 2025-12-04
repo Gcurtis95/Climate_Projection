@@ -105,11 +105,11 @@ def summarise(rag_result, web_result, projections, address):
     model = "gpt-5.1"
 
     summerised_analysis = open_ai_get_completion(prompt, system_prompt, model)
-    print(summerised_analysis.output_text)
+ 
 
     
 
-    return summerised_analysis
+    return summerised_analysis.output_text
 
 
 
