@@ -1,4 +1,5 @@
 // @ts-nocheck
+'use client'
 import { Fn, smoothstep, pow } from 'three/tsl'
 import { sdSphere } from '../utils/sdf/shapes'
 

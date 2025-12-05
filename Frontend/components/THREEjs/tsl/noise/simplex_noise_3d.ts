@@ -1,6 +1,7 @@
 // Three.js Transpiler r164
 
 // @ts-nocheck
+'use client'
 import { vec4, mod, Fn, mul, sub, vec3, vec2, dot, floor, step, min, max, float, abs } from 'three/tsl'
 import { permute, taylorInvSqrt } from './common'
 

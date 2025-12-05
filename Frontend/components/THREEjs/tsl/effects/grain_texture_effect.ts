@@ -1,4 +1,5 @@
 // @ts-nocheck
+'use client'
 import { vec2, Fn, fract, sin, dot } from 'three/tsl'
 
 /**

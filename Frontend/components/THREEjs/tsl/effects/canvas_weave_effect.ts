@@ -1,4 +1,5 @@
 // @ts-nocheck
+'use client'
 import { fbm } from '../noise/fbm'
 import { Fn, fract, sin, PI,vec2, vec3, smoothstep, mix } from 'three/tsl'
 

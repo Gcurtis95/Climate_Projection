@@ -1,4 +1,5 @@
 // @ts-nocheck
+'use client'
 
 import { floor, Fn,vec2, vec3, sub, vec4, mul, overloadingFn, fract, abs, dot, lessThan, float, mod } from 'three/tsl'
 

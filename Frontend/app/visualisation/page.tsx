@@ -13,12 +13,12 @@ type VisualisationPageProps = {
 export default async function visualisation({searchParams}: VisualisationPageProps){
 
   
-    // const params = await searchParams
-    // const lon = params.lon;
-    // const lat = params.lat;
-    // const month = params.month;
-    // const year = params.year;
-    // const address = params.address;
+    const params = await searchParams
+    const lon = params.lon;
+    const lat = params.lat;
+    const month = params.month;
+    const year = params.year;
+    const address = params.address;
 
 
 

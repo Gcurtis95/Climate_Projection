@@ -1,6 +1,8 @@
 // @ts-nocheck
+'use client'
 import { Fn, float, vec2, vec3, Loop, mul, add, div } from 'three/tsl'
 import { simplexNoise3d } from './simplex_noise_3d'
+
 
 
 /**

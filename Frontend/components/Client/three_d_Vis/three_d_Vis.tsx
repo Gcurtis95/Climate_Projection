@@ -1,10 +1,8 @@
 'use client'
 import WebGPUScene from '../../THREEjs/components/webgpu_scene'
-import {WebGPUSketch} from '../../THREEjs/components/webgpu_sketch'
-import {slateBase, Sketch} from '../../THREEjs/sketch'
+import {Sketch} from '../../THREEjs/sketch'
 import {useRef, Suspense} from 'react'
 import styles from './style.module.css'
-
 
 
 

@@ -1,3 +1,4 @@
+'use client'
 import { useFrame, useThree, RootState } from '@react-three/fiber'
 import { MeshBasicNodeMaterial } from 'three/webgpu'
 import { sin, time, uv, vec3 } from 'three/tsl'
