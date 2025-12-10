@@ -34,7 +34,7 @@ def rag_query(projections, address):
     <context>
     Here is the data returned from google earth engine which includes projected data for the specific year and month 
     as well the baseline for the specific region from 1950 to 2014.
-    this is the address and region of the use {address}
+    this is the address and region of the use {address["address"]}
     {projections}
     <context>
 
@@ -60,7 +60,7 @@ def rag_query(projections, address):
             No explanation or meta-commentary—only the query.
     """ 
 
-    model = "gpt-5-mini"
+    model = "gpt-4.1"
 
 
     vector_db_query = open_ai_get_completion(prompt, system_prompt, model)
@@ -74,15 +74,35 @@ def rag_query(projections, address):
 
 
 
-def summarise(rag_result, web_result, projections, address):
+def summarise(rag_result, projections, web_result, address):
 
     prompt = f"""
     <Context>
-    Here are the projected and baseline data form google earth engine {projections}, 
-    Here is the data returned from the gemini web search {web_result} for NASA/GDDP-CMIP6 dataset in {address}. 
+    Here are the projected and baseline data forom google earth engine {projections}, 
+    Here is the data returned from the gemini web search for NASA/GDDP-CMIP6 dataset in {address["address"]}. 
+
+    here are the bands
+
+    Bands
+
+    Name	Units	        Min	        Max	Pixel   Size	    Description
+    hurs	%	            -101.85*	179.44*	    meters	    Near-surface relative humidity. 
+    huss	Mass fraction	-0.007*	    11.76*	    meters      Near-surface specific humidity.
+    pr	   kg/m^2/s	        0*	        0.0083*	    meters	    Precipitation (mean of the daily precipitation rate)
+    rlds	W/m^2	        -481.17*	908.96*	    meters	    Surface downwelling longwave radiation  
+    rsds	W/m^2	        -702710*	553087*	    meters	    Surface downwelling shortwave radiation
+    sfcWind	m/s	            -4.98*	28.29*	        meters	    Daily-mean near-surface wind speed
+    tas	    K	            192.15*	336.94*	        meters	    Daily near-surface air temperature. 
+    tasmin	K	            163.66*	334.92*	        meters	    Daily minimum near-surface air temperature. 
+    tasmax	K	            202.09*	352.77*	        meters	    Daily maximum near-surface air temperature. 
+
+    * estimated min or max value
 
     Here the is rag and vector database
     {rag_result},
+
+
+    here is the result from the websearch {web_result}
 
     <Context>
     """
@@ -102,7 +122,7 @@ def summarise(rag_result, web_result, projections, address):
 
     """
 
-    model = "gpt-5.1"
+    model = "gpt-5-nano"
 
     summerised_analysis = open_ai_get_completion(prompt, system_prompt, model)
  

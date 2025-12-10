@@ -17,10 +17,6 @@ chroma_client = chromadb.CloudClient(
   database=database
 )
 
-# openai_ef = embedding_functions.OpenAIEmbeddingFunction(
-#                 api_key=CHROMA_OPENAI_API_KEY,
-#                 model_name="text-embedding-3-large"
-#             )
 
 
 collection = chroma_client.get_or_create_collection(name="climate_collection")
@@ -29,7 +25,7 @@ def retrieval_vector_db(vector_db_query):
       
   results = collection.query(
   query_texts=[vector_db_query.output_text], 
-      n_results=5
+      n_results=10
       )
   print(f"""
         
@@ -41,11 +37,11 @@ def retrieval_vector_db(vector_db_query):
      
 
 
-      {results}
+      {results["documents"]}
         
         
         
         
         
         """)
-  return results
+  return results["documents"]

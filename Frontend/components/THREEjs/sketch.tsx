@@ -41,14 +41,18 @@ import { grainTextureEffect } from './tsl/effects/grain_texture_effect'
 import { vignetteEffect } from './tsl/effects/vignette_effect'
 import {crtScanlineEffect} from './tsl/post_processing/crt_scanline_effect'
 
+
+
+
+
 const textureLoader = new TextureLoader()
-const imageTexture = textureLoader.load('/satelitee.jpeg')
+const imageTexture = textureLoader.load('/debby.jpg')
 
 const n1Freq = uniform(1)
 const n1Offset1 = uniform(40)
 const n1Offset2 = uniform(15)
-const n1Oscillation1 = uniform(9)
-const n1Oscillation2 = uniform(9)
+const n1Oscillation1 = uniform(10)
+const n1Oscillation2 = uniform(5)
 const n1Contribution1 = uniform(0.3)
 const n1Contribution2 = uniform(0.1)
 
@@ -88,8 +92,7 @@ const onFrame = (node, state) => {
 
 export const slateBase = Fn(() => {
 
-  const textureLoader = new TextureLoader()
-  const imageTexture = textureLoader.load('/satelitee.jpeg')    
+ 
   const _uv = uv().toVar()
   const _time = myUniform
   const _timex = _time.mul(0.1)
@@ -138,8 +141,8 @@ export const slateBase = Fn(() => {
   // const vignette = smoothstep(0.45, 1, length(_uv.sub(0.5))).oneMinus()
   // finalColor.addAssign(_vignette)
 
-  const _grain = grainTextureEffect(_uv).mul(0.2)
-  finalColor.addAssign(_grain)
+  // const _grain = grainTextureEffect(_uv).mul(0.2)
+  // finalColor.addAssign(_grain)
 
   const weave = canvasWeaveEffect(_uv) 
   finalColor.mulAssign(weave)

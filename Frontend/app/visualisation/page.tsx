@@ -1,5 +1,6 @@
 import ThreeDVisual from '../../components/Client/three_d_Vis/three_d_Vis'
 import styles from './style.module.css'
+
 type VisualisationPageProps = {
   searchParams: Promise<{
     lon: string;
@@ -19,17 +20,19 @@ export default async function visualisation({searchParams}: VisualisationPagePro
     const month = params.month;
     const year = params.year;
     const address = params.address;
+    
 
 
 
-    // const climateReponse = await fetch(`http://localhost:3000/api/climate?lon=${lon}&lat=${lat}&month=${month}&year=${year}&address=${address}`);
-    // const json = await climateReponse.json();
 
-    // console.log(json)
+
+    const climateReponse = await fetch(`http://localhost:3000/api/climate?lon=${lon}&lat=${lat}&month=${month}&year=${year}&address=${address}`);
+    const json = await climateReponse.json();
+
 
     return (
         <div className={styles.ThreeDVisual}>
-          <ThreeDVisual/>
+          <ThreeDVisual />
         </div>
     )
 }

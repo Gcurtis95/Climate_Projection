@@ -5,6 +5,9 @@ import {useRef, Suspense} from 'react'
 import styles from './style.module.css'
 
 
+type ThreeDVisualProps = {
+  imageMap: string; // Adjust type if imageMap is not a string
+};
 
 export default function ThreeDVisual(){
 
@@ -24,7 +27,7 @@ export default function ThreeDVisual(){
           eventPrefix='client'
           >
 
-        <Sketch/>
+        <Sketch />
         </WebGPUScene>
     </Suspense>
     </div>

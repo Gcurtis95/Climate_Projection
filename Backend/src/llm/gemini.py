@@ -33,7 +33,7 @@ def web_search(projections, address):
     prompt = f"""
     <context>
     Here is the data returned from Google Earth Engine, including both the projected values for the selected year and month, and the historical baseline (1950–2014) for the same location.
-    Location:  {address}
+    Location:  {address["address"]}
     Climate Projections and Baseline:
     {projections}
     </context>
