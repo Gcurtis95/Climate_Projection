@@ -26,7 +26,6 @@ export default function ThreeDVisual(){
           eventSource={ref}
           eventPrefix='client'
           >
-
         <Sketch />
         </WebGPUScene>
     </Suspense>

@@ -1,5 +1,6 @@
-import ThreeDVisual from '../../components/Client/three_d_Vis/three_d_Vis'
+import ThreeDVisual from '../../components/Client/ThreeShaderVis/ThreeShaderVis'
 import styles from './style.module.css'
+import VisScene from '../../components/Client/VisScene/VisScene'
 
 type VisualisationPageProps = {
   searchParams: Promise<{
@@ -11,28 +12,45 @@ type VisualisationPageProps = {
   }>;
 };
 
+
+type graphData = {
+  nodes: {
+    id: string;
+    name: string,
+    group: number;
+  }[];
+  links: {
+    source: string;
+    target: string;
+  }[];
+};
+
+
+
 export default async function visualisation({searchParams}: VisualisationPageProps){
 
   
-    const params = await searchParams
-    const lon = params.lon;
-    const lat = params.lat;
-    const month = params.month;
-    const year = params.year;
-    const address = params.address;
-    
+  const params = await searchParams
+  const lon = params.lon;
+  const lat = params.lat;
+  const month = params.month;
+  const year = params.year;
+  const address = params.address;
+  
+
+  const climateReponse = await fetch(`http://localhost:3000/api/climate?lon=${lon}&lat=${lat}&month=${month}&year=${year}&address=${address}`);
 
 
+  const ClimateData = await climateReponse.json();
+
+  const graphData: graphData = ClimateData.result
 
 
-
-    const climateReponse = await fetch(`http://localhost:3000/api/climate?lon=${lon}&lat=${lat}&month=${month}&year=${year}&address=${address}`);
-    const json = await climateReponse.json();
-
-
-    return (
+  return (
         <div className={styles.ThreeDVisual}>
           <ThreeDVisual />
+          {graphData && <VisScene graphData={graphData} />}
+          
         </div>
     )
 }
