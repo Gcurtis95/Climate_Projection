@@ -1,16 +1,4 @@
 
-/**
- * @license Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)
- *
- * This sketch is licensed under CC BY-NC-SA 4.0. You are free to:
- * - Share and adapt this work
- * - Use modified versions commercially
- *
- * Under these conditions:
- * - Attribution: Credit Ben McCormick (phobon) and link to this project
- * - NonCommercial: Don't sell the original, unmodified sketch
- * - ShareAlike: Distribute derivatives under the same license
- */
 // @ts-nocheck
 
 'use client'
@@ -51,13 +39,12 @@ const imageTexture = textureLoader.load('/debby.jpg')
 const n1Freq = uniform(1)
 const n1Offset1 = uniform(40)
 const n1Offset2 = uniform(15)
-const n1Oscillation1 = uniform(10)
+const n1Oscillation1 = uniform(5)
 const n1Oscillation2 = uniform(5)
 const n1Contribution1 = uniform(0.3)
 const n1Contribution2 = uniform(0.1)
 
-const n2Freq = uniform(2
-)
+const n2Freq = uniform(2)
 const n2Offset1 = uniform(22)
 const n2Offset2 = uniform(32)
 const n2Oscillation1 = uniform(17)
@@ -84,7 +71,7 @@ const myUniform = uniform(0.0)
 // Note that the `onFrame` callback is called every frame, so you need to be careful with the performance of your sketch.
 const onFrame = (node, state) => {
   // Do something with your node, or using R3F's full state
-  myUniform.value += 0.001
+  myUniform.value += 0.0002
 }
 
 
@@ -154,9 +141,24 @@ export const slateBase = Fn(() => {
   return finalColor
 })
 
-/**
- * Slate 5: A sketch exploring noise, texture and color
- */
-export const Sketch = () => {
+
+
+
+interface ThreeDShaderProps {
+    setLoaded: React.Dispatch<SetStateAction<boolean>>;
+}
+
+export const Sketch = ({setLoaded}: ThreeDShaderProps) => {
+
+
+
+
+
+
+  setLoaded(imageTexture.isTexture)
+  console.log(imageTexture.isTexture)
+
+
+
   return <WebGPUSketch colorNode={slateBase()} onFrame={onFrame}/>
 }

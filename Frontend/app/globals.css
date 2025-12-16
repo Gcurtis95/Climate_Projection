@@ -5,6 +5,7 @@ body {
   overflow-x: hidden;
   max-height: 100vh;
   overscroll-behavior: none;
+  background-color: black;
 }
 
 body {

@@ -1,22 +1,18 @@
 'use client'
 import WebGPUScene from '../../THREEjs/components/webgpu_scene'
 import {Sketch} from '../../THREEjs/sketch'
-import {useRef, Suspense} from 'react'
+import {useRef, SetStateAction} from 'react'
 import styles from './style.module.css'
 
+interface ThreeDShaderProps {
+    setLoaded: React.Dispatch<SetStateAction<boolean>>;
+}
 
-type ThreeDVisualProps = {
-  imageMap: string; // Adjust type if imageMap is not a string
-};
-
-export default function ThreeDVisual(){
-
-
-
+export default function ThreeDShader({setLoaded}: ThreeDShaderProps) {
     const ref = useRef(null)
+
     return (
     <div ref={ref} className={styles.WebGPUScene}>
-    <Suspense>
         <WebGPUScene
           style={{
             position: 'fixed',
@@ -26,9 +22,9 @@ export default function ThreeDVisual(){
           eventSource={ref}
           eventPrefix='client'
           >
-        <Sketch />
+         <Sketch setLoaded={setLoaded}/>
         </WebGPUScene>
-    </Suspense>
+
     </div>
     )
 }

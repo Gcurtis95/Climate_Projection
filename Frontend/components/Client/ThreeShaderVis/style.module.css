@@ -1,6 +1,11 @@
-.WebGPUScene{
-    position: relative;
-    width: 100%;
-    height: 100vh;
+.WebGPUScene {
+    background-color: black;
+    animation: fadeIn 5s;
+    opacity:0.5;
 
+}
+
+@keyframes fadeIn {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
 }

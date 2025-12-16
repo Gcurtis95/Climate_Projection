@@ -78,6 +78,12 @@ def get_projected_time_series(location_date_data):
     
     month_str = get_month(location_date_data["month"])
     target_month = int(month_str)
+
+    month_window = [
+    ((target_month - 2) % 12) + 1,  # previous month
+    target_month,
+    (target_month % 12) + 1         # next month
+]
     
     start_year = 2015
     
@@ -101,12 +107,18 @@ def get_projected_time_series(location_date_data):
         
         filtered_by_year = (
             full_projected_collection 
-            .filter(ee.Filter.eq('month', target_month))# type: ignore
+            .filter(ee.Filter.inList('month', month_window))# type: ignore
             .filter(ee.Filter.calendarRange(year, year, 'year'))# type: ignore
         )
         
-
+        print("Using months:", month_window)
         mean_image = filtered_by_year.mean()
+
+        # Convert Kelvin → Celsius for temperature bands
+        mean_image = mean_image.addBands(
+            mean_image.select(['tas', 'tasmin', 'tasmax']).subtract(273.15),
+            overwrite=True
+        )
 
 
         reduced_dict = mean_image.reduceRegion(
@@ -126,47 +138,11 @@ def get_projected_time_series(location_date_data):
     print(time_series_features[2]['properties']['year'])
 
 
-    # result = process_time_series_for_frontend(time_series_features)
-
     nodes = []
     links = []
 
 
-    ## THINGS TODO TOMORROW:: ROUND EACH NUMBER: ADD SEPERATE ID FOR AND PUT BANDS INTO NAME INSTEAD OF ID
-
-    
-    # for i in time_series_features:
-
-    #     id1 = {"id": f"""{i["properties"]["year"]}""", "group": i["properties"]["year"]}
-    #           ## link 
-    #     lk1 = {"source": f"""{i["properties"]["year"]}""", "target": f"""{i["properties"]["year"] + 1}""", "value": i["properties"]["year"]}
-    #     links.append(lk1)
-
-    #     nodes.append(id1)
-    #     id2 = {"id": f"""hurs {i["properties"]["hurs"]}""", "group": i["properties"]["year"]}
-    #     nodes.append(id2)
-    #     id3 = {"id": f"""huss {i["properties"]["huss"]}""", "group": i["properties"]["year"]}
-    #     nodes.append(id3)
-    #     id4 = {"id": f"""pr {i["properties"]["pr"]}""", "group": i["properties"]["year"]}
-    #     nodes.append(id4)
-    #     id5 = {"id": f"""rlds {i["properties"]["rlds"]}""", "group": i["properties"]["year"]}
-    #     nodes.append(id5)
-    #     id6 = {"id": f"""rsds {i["properties"]["rsds"]}""", "group": i["properties"]["year"]}
-    #     nodes.append(id6)
-    #     id7 = {"id": f"""sfcWind {i["properties"]["sfcWind"]}""", "group": i["properties"]["year"]}
-    #     nodes.append(id7)
-    #     id8 = {"id": f"""tas {i["properties"]["tas"]}""", "group": i["properties"]["year"]}
-    #     nodes.append(id8)
-    #     id9 = {"id": f"""tasmax {i["properties"]["tasmax"]}""", "group": i["properties"]["year"]}
-    #     nodes.append(id9)
-    #     id10 = {"id": f"""tasmin {i["properties"]["tasmin"]}""", "group": i["properties"]["year"]}
-    #     nodes.append(id10)
-
-    #     ## link 
-        # lk1 = {"source": f"""{i["properties"]["year"]}""", "target": f"""{i["properties"]["year"] + 1}""", "value": i["properties"]["year"]}
-        # links.append(lk1)
-
-    BANDS = ["hurs", "huss", "pr", "rlds", "rsds", "sfcWind", "tas", "tasmax", "tasmin"]
+    BANDS = ["hurs", "sfcWind", "tas"]
 
 
 
@@ -191,8 +167,8 @@ def get_projected_time_series(location_date_data):
         nodes.extend(
         {
             "id": f"{band}.{year}",
-            "name": f"{band}: {round(props[band], 3)}",
-            "group": year,
+            "name": f"{round(props[band], 2)}",
+            "group": {band},
         }
 
         for band in BANDS 
@@ -201,7 +177,8 @@ def get_projected_time_series(location_date_data):
         links.extend({
             "source": f"{band}.{year}",
             "target": f"{year}",
-            "value": 100
+            "value": 1
+  
         }
         for band in BANDS 
         )
@@ -214,13 +191,6 @@ def get_projected_time_series(location_date_data):
 
 
     result = {"nodes": nodes, "links": links}
-
-
-
-
-
-
-
 
     # print(f"""
 
@@ -236,23 +206,7 @@ def get_projected_time_series(location_date_data):
 
 
 
-# def process_time_series_for_frontend(time_series_features):
 
-#     records = [feature["properties"] for feature in time_series_features]
-
-#     df = pd.DataFrame(records)
-
-#     df["year"] = df["year"].astype(int)
-
-#     BANDS = ["tas", "tasmin", "tasmax", "pr", "hurs", "huss", "rlds", "rsds", "sfcWind"]
-
-#     present_bands = [b for b in BANDS if b in df.columns]
-
-#     plot_df = df[["year"] + present_bands].sort_values("year").reset_index(drop=True)
-
-#     json_data = plot_df.to_dict(orient="records")
-
-#     return json_data
 
 
 

@@ -29,7 +29,7 @@ export default function Button({location, date} : userSelect){
 
         const address = jsonLocation.result.features[0].properties.full_address
 
-        console.log(address)
+        console.log(jsonWaterResponse.result.water)
 
         setIsItWater(jsonWaterResponse.result.water)
 

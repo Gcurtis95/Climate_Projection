@@ -74,7 +74,7 @@ def rag_query(projections, address):
 
 
 
-def summarise(rag_result, projections, web_result, address):
+def summarise(rag_result, projections, address):
 
     prompt = f"""
     <Context>
@@ -102,7 +102,7 @@ def summarise(rag_result, projections, web_result, address):
     {rag_result},
 
 
-    here is the result from the websearch {web_result}
+    here is the result from the websearch 
 
     <Context>
     """
@@ -122,7 +122,7 @@ def summarise(rag_result, projections, web_result, address):
 
     """
 
-    model = "gpt-5-nano"
+    model = "gpt-4o"
 
     summerised_analysis = open_ai_get_completion(prompt, system_prompt, model)
  

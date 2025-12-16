@@ -18,7 +18,7 @@ export default function Map({setLocation}: Props){
     const mapRef = useRef<mapboxgl.Map | null>(null)
     const mapContainerRef = useRef<HTMLDivElement | null>(null)
 
-    const [coordinates, setCoordinates] = useState<string[]>([]);
+    const [coordinates, setCoordinates] = useState<string[]>(['Longitude: 0', 'Latitude: 51.072']);
 
     useEffect(() => {
 
@@ -28,7 +28,7 @@ export default function Map({setLocation}: Props){
             mapRef.current = new mapboxgl.Map({
                 container: mapContainerRef.current,
                 style: 'mapbox://styles/mapbox/dark-v11',
-                center: [0, 0],
+                center: [0, 51.072],
                 zoom: 2
             });
         }
@@ -38,7 +38,7 @@ export default function Map({setLocation}: Props){
                 color: "#FFFFFF",
                 draggable: true
              })
-            .setLngLat([0, 0])
+            .setLngLat([0, 51.5072])
             .addTo(mapRef.current!);
 
         function onDragEnd() {
@@ -66,6 +66,7 @@ export default function Map({setLocation}: Props){
     return parseFloat(num.toFixed(4));
   }
     
+  console.log(mapContainerRef)
 
     return (
         <>
