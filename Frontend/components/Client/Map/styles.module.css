@@ -1,7 +1,7 @@
 .MapContainer{
     height: 100%;
     width: 50%;
-    background-color: lightgrey;
+    background-color: rgba(0, 0, 0, 0);
 }
 .Cooridinates{
         background: rgba(0, 0, 0, 0.5);

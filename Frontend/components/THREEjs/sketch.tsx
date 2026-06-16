@@ -34,7 +34,7 @@ import {crtScanlineEffect} from './tsl/post_processing/crt_scanline_effect'
 
 
 const textureLoader = new TextureLoader()
-const imageTexture = textureLoader.load('/debby.jpg')
+const imageTexture = textureLoader.load('/tinydebby.jpg')
 
 const n1Freq = uniform(1)
 const n1Offset1 = uniform(40)
@@ -45,10 +45,10 @@ const n1Contribution1 = uniform(0.3)
 const n1Contribution2 = uniform(0.1)
 
 const n2Freq = uniform(2)
-const n2Offset1 = uniform(22)
-const n2Offset2 = uniform(32)
-const n2Oscillation1 = uniform(17)
-const n2Oscillation2 = uniform(12)
+const n2Offset1 = uniform(5)
+const n2Offset2 = uniform(15)
+const n2Oscillation1 = uniform(5)
+const n2Oscillation2 = uniform(5)
 const n2Contribution1 = uniform(0.21)
 const n2Contribution2 = uniform(0.26)
 
@@ -99,13 +99,13 @@ export const slateBase = Fn(() => {
   n1Contribution2,)
   const n2 = warpedFbmCoords(  rotatedUV,
   _time,
-  n1Freq,
-  n1Offset1,
-  n1Offset2,
-  n1Oscillation1,
-  n1Oscillation2,
-  n1Contribution1,
-  n1Contribution2,)
+  n2Freq,
+  n2Offset1,
+  n2Offset2,
+  n2Oscillation1,
+  n2Oscillation2,
+  n2Contribution1,
+  n2Contribution2,)
   const m1 = warpedFbmCoords(rotatedUV.mul(0.55), _time, 
     n3Freq,
     n3Offset1,
@@ -117,7 +117,7 @@ export const slateBase = Fn(() => {
   )
 
   const o1 = texture(imageTexture, warpedUV.add(warpedUV.mul(n1.mul(o1Contribution)))).toVar()
-  const o2 = texture(imageTexture, rotatedUV.add(rotatedUV.mul(n2.mul(o2Contribution)))).toVar()
+  const o2 = texture(imageTexture, rotatedUV.add(rotatedUV.mul(n1.mul(o2Contribution)))).toVar()
 
 
 
@@ -131,8 +131,8 @@ export const slateBase = Fn(() => {
   // const _grain = grainTextureEffect(_uv).mul(0.2)
   // finalColor.addAssign(_grain)
 
-  const weave = canvasWeaveEffect(_uv) 
-  finalColor.mulAssign(weave)
+  // const weave = canvasWeaveEffect(_uv) 
+  // finalColor.mulAssign(weave)
 
   
 
@@ -149,11 +149,6 @@ interface ThreeDShaderProps {
 }
 
 export const Sketch = ({setLoaded}: ThreeDShaderProps) => {
-
-
-
-
-
 
   setLoaded(imageTexture.isTexture)
   console.log(imageTexture.isTexture)

@@ -9,7 +9,7 @@ export async function GET(request: Request){
 
     const lon = searchParams.get("lon");
     const lat = searchParams.get("lat");
-    const month = searchParams.get("month");
+    const season = searchParams.get("season");
     const year = searchParams.get("year");
     const address = searchParams.get("address");
 
@@ -22,7 +22,7 @@ export async function GET(request: Request){
         body: JSON.stringify({
             'lon': `${lon}`,
             'lat': `${lat}`,
-            'month': `${month}`,
+            'season': `${season}`,
             'year': `${year}`,
             'address': `${address}`
         })

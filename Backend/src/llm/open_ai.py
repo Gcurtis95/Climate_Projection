@@ -2,6 +2,7 @@ from openai import OpenAI
 from dotenv import load_dotenv
 import os
 from rag.chroma_db import retrieval_vector_db
+import json
 
 load_dotenv()
 
@@ -27,58 +28,58 @@ def open_ai_get_completion(prompt, system_prompt, model):
 
 
 
-def rag_query(projections, address):
+# def rag_query(projections, address):
 
-    prompt = f"""
+#     prompt = f"""
     
-    <context>
-    Here is the data returned from google earth engine which includes projected data for the specific year and month 
-    as well the baseline for the specific region from 1950 to 2014.
-    this is the address and region of the use {address["address"]}
-    {projections}
-    <context>
+#     <context>
+#     Here is the data returned from google earth engine which includes projected data for the specific year and month 
+#     as well the baseline for the specific region from 1950 to 2014.
+#     this is the address and region of the use {address["address"]}
+#     {projections}
+#     <context>
 
-    """
-
-
-    system_prompt = f"""
-            You are an assistant responsible for generating precise, well-structured retrieval queries for a ChromaDB vector database containing open-access research papers related to the NASA/GDDP-CMIP6 climate dataset.
-
-            For each request, you receive:
-
-            Parsed climate data from Google Earth Engine, including historical baselines (1950–2014) and future projections for a specific location, month, and year.
-            A user-provided location (address), along with the processed projection values for key variables such as temperature, precipitation, humidity, radiative fluxes, and wind.
-            Your task is to:
-
-            Extract the scientifically relevant signals from the supplied GEE outputs (e.g., projected temperature anomalies, precipitation trends, extreme-event indicators). Transform 
-            these signals into a targeted, high-quality search query suitable for vector retrieval. The generated query should help retrieve research papers that can support a detailed impact 
-            assessment for that region and timeframe, including expected climatic changes, risks, and environmental or socio-economic implications.   When creating the search query: Focus on 
-            variables present in the projections (e.g., tas, pr, rlds, rsds, sfcWind, humidity). Include relevant temporal context (selected month, selected year, baseline comparison).    
-            Include spatial context (location name, region type, latitude/longitude). Use scientific terminology consistent with CMIP6 and GDDP literature.
-            Avoid generic or broad queries; aim for specificity that maximises retrieval relevance. Your output should be:
-            A single, compact search query string optimised for vector semantic search.
-            No explanation or meta-commentary—only the query.
-    """ 
-
-    model = "gpt-4.1"
+#     """
 
 
-    vector_db_query = open_ai_get_completion(prompt, system_prompt, model)
+#     system_prompt = f"""
+#             You are an assistant responsible for generating precise, well-structured retrieval queries for a ChromaDB vector database containing open-access research papers related to the NASA/GDDP-CMIP6 climate dataset.
 
-    print(vector_db_query.output_text)
+#             For each request, you receive:
+
+#             Parsed climate data from Google Earth Engine, including historical baselines (1950–2014) and future projections for a specific location, month, and year.
+#             A user-provided location (address), along with the processed projection values for key variables such as temperature, precipitation, humidity, radiative fluxes, and wind.
+#             Your task is to:
+
+#             Extract the scientifically relevant signals from the supplied GEE outputs (e.g., projected temperature anomalies, precipitation trends, extreme-event indicators). Transform 
+#             these signals into a targeted, high-quality search query suitable for vector retrieval. The generated query should help retrieve research papers that can support a detailed impact 
+#             assessment for that region and timeframe, including expected climatic changes, risks, and environmental or socio-economic implications.   When creating the search query: Focus on 
+#             variables present in the projections (e.g., tas, pr, rlds, rsds, sfcWind, humidity). Include relevant temporal context (selected month, selected year, baseline comparison).    
+#             Include spatial context (location name, region type, latitude/longitude). Use scientific terminology consistent with CMIP6 and GDDP literature.
+#             Avoid generic or broad queries; aim for specificity that maximises retrieval relevance. Your output should be:
+#             A single, compact search query string optimised for vector semantic search.
+#             No explanation or meta-commentary—only the query.
+#     """ 
+
+#     model = "gpt-4.1"
+
+
+#     vector_db_query = open_ai_get_completion(prompt, system_prompt, model)
+
+#     print(vector_db_query.output_text)
 
     
 
-    return retrieval_vector_db(vector_db_query)
+#     return retrieval_vector_db(vector_db_query)
 
 
 
 
-def summarise(rag_result, projections, address):
+def summarise(web_task, projections, address):
 
     prompt = f"""
     <Context>
-    Here are the projected and baseline data forom google earth engine {projections}, 
+    Here are the projected and baseline data from google earth engine {projections}, 
     Here is the data returned from the gemini web search for NASA/GDDP-CMIP6 dataset in {address["address"]}. 
 
     here are the bands
@@ -98,16 +99,35 @@ def summarise(rag_result, projections, address):
 
     * estimated min or max value
 
-    Here the is rag and vector database
-    {rag_result},
 
 
     here is the result from the websearch 
 
+    {web_task}
+
     <Context>
+
+    <Response>
+
+    You MUST return a JSON object that conforms to the schema below.
+
+    DO NOT include the schema itself.
+    DO NOT include explanations.
+    DO NOT include markdown.
+    DO NOT include keys not defined in the schema.
+
+    Return ONLY the JSON object.                
+
+    {JSON_SCHEMA}
+
+
+
+
+    <Response>
     """
 
-    system_prompt = f""" You are a climate-science research assistant specialised in interpreting Google Earth Engine outputs from the NASA/GDDP-CMIP6 dataset.
+    system_prompt = f""" You are a climate-science research assistant specialised in interpreting Google Earth Engine outputs from the NASA/GDDP-CMIP6 dataset
+    FOR scenario ssp245.
     You will receive:
                 a web search anaylisis based on the data. 
                 a retrieval based search from a vector data base full of open ccess research papers on the subject.
@@ -122,17 +142,117 @@ def summarise(rag_result, projections, address):
 
     """
 
-    model = "gpt-4o"
+    model = "gpt-4.1"
 
     summerised_analysis = open_ai_get_completion(prompt, system_prompt, model)
  
 
     
 
-    return summerised_analysis.output_text
+    return json.loads(summerised_analysis.output_text)
 
 
 
+JSON_SCHEMA = """
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.com/schemas/climate-summary.json",
+  "title": "ClimateSummary",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["title", "overview", "location", "impacts", "data_table"],
+  "properties": {
+    "title": { "type": "string", "minLength": 5 },
 
+    "overview": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["summary", "key_takeaways"],
+      "properties": {
+        "summary": { "type": "string", "minLength": 40 },
+        "key_takeaways": {
+          "type": "array",
+          "minItems": 3,
+          "maxItems": 6,
+          "items": { "type": "string" }
+        }
+      }
+    },
+
+    "data_table": {
+      "type": "array",
+      "description": "Row-oriented table for easy UI rendering",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/variableRow" }
+    },
+
+    "impacts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["bullets"],
+      "properties": {
+        "bullets": {
+          "type": "array",
+          "minItems": 3,
+          "items": { "type": "string" }
+        }
+      }
+    },
+
+    "citations": {
+      "type": "array",
+      "description": "Optional: store paper/report identifiers used by RAG",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["title"],
+        "properties": {
+          "title": { "type": "string" },
+          "doi": { "type": "string" },
+          "url": { "type": "string" }
+        }
+      }
+    }
+  },
+
+  "$defs": {
+    "variableRow": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["key", "label", "unit", "baseline", "projected"],
+      "properties": {
+        "key": {
+          "type": "string",
+          "description": "Canonical variable key (e.g., tasmax, pr, hurs)",
+          "pattern": "^[a-zA-Z0-9_]+$"
+        },
+        "label": { "type": "string" },
+        "unit": { "type": "string" },
+
+        "baseline": { "$ref": "#/$defs/valueWithOptionalRaw" },
+        "projected": { "$ref": "#/$defs/valueWithOptionalRaw" },
+
+        "display_format": {
+          "type": "string",
+          "description": "Optional formatting hint for UI",
+          "enum": ["number", "scientific", "percent", "celsius", "kelvin", "w_m2", "m_s", "kg_m2_s"]
+        }
+      }
+    },
+
+
+    "valueWithOptionalRaw": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["value"],
+      "properties": {
+        "value": { "type": "number" },
+        "raw_value": { "type": "number" },
+        "raw_unit": { "type": "string" }
+      }
+    }
+  }
+}
+"""
 
 

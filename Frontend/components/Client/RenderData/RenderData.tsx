@@ -22,33 +22,82 @@ type graphData = {
 type RenderDataProps = {
   climateData: {
     data: graphData,
-    agent: string
+    agent: agentData
   }
 };
+
+
+type Comparison = {
+    baseline_vs_projected: {
+    key: string
+    delta: number
+    delta_unit: string
+    relative_change_percent: number
+    interpretation: string
+    }[],
+    notes: string[],
+}
+
+export type ClimateTableRow = {
+  key: string;
+  label: string;
+  unit: string;
+  display_format?: "kelvin" | "percent" | "scientific" | "w_m2" | "m_s";
+  baseline: { value: number };
+  projected: { value: number };
+};
+
+
+type Impact = {
+    bullets: string[]
+}
+
+type Location = {
+    country_region: string,
+    lat: number,
+    lon: number,
+    name: string
+}
+
+type Overview = {
+    key_takeaways: string[]
+    summary: string
+}
+
+
+
+type agentData = {
+        $schema: string,
+        caveats: string[],
+        citations: string [],
+        comparison: Comparison,
+        data_table: any
+        impacts: Impact,
+        location: Location,
+        overview: Overview,
+        time: any,
+        title: string    
+}
 
 export default function RenderData({ climateData }: RenderDataProps) {
 
 
   const [loaded, setLoaded] = useState<boolean>(false)
 
-
+    console.log(climateData)
     const graphData: graphData = climateData.data
-    const agentData: string = climateData.agent
+    const agentData: agentData = climateData.agent
 
 
     return(
         <>
           <ThreeDShader setLoaded={setLoaded}/>
-          {/* <ThreeDShader/> */}
-              <AgentOutput agent={agentData}/>
-              <VisScene graphData={graphData}/>
-          {/* {loaded && (
+          {loaded && (
             <div className={styles.container}>
               <AgentOutput agent={agentData}/>
-              <VisScene graphData={graphData}/>
             </div>
             
-          )} */}
+          )}
 
         </>
     )

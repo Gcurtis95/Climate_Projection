@@ -12,13 +12,7 @@ import {useState} from 'react'
 export default function App(){
 
     const [location, setLocation] = useState<number[]>([0,  51.072])
-    const [date, setDate] = useState <PickerValue>({month: 'January', year: '2025'})
-
-
-
-
-
-
+    const [date, setDate] = useState <PickerValue>({season: 'Winter', year: '2025'})
 
     return (
         <div className={styles.Container}>

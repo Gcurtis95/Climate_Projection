@@ -9,13 +9,13 @@ import {SetStateAction} from 'react'
 
 const year: string[] = [];
 
-for(let i: number = 2025; i < 2101; i++){
+for(let i: number = 2030; i < 2101; i += 10){
     year.push(`${i}`)
 }
 
 
-const selections: { month: string[]; year: string[] } = {
-    month: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+const selections: { season: string[]; year: string[] } = {
+    season: ['Winter', 'Spring', 'Summer', 'Autumn'],
     year: year
 }
 
@@ -28,7 +28,7 @@ interface userSelectProp {
 
 export default function Date({setDate}: userSelectProp){
 
-    const [pickerValue, setPickerValue] = useState<PickerValue>({month: 'January', year: '2025'})
+    const [pickerValue, setPickerValue] = useState<PickerValue>({season: 'Winter', year: '2030'})
 
 
     useEffect(() => {

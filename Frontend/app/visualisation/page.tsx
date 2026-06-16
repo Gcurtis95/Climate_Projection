@@ -8,7 +8,7 @@ type VisualisationPageProps = {
   searchParams: Promise<{
     lon: string;
     lat: string;
-    month: string;
+    season: string;
     year: string;
     address: string;
   }>;

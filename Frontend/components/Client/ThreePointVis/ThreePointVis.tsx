@@ -7,6 +7,7 @@ import SpriteText from 'three-spritetext';
 
 
 
+
 const NoSSRForceGraph = dynamic(() => import('../../../lib/NoSSRForceGraph'), {
   ssr: false,
 });
@@ -39,15 +40,18 @@ export default function ClimateGraph({ graphData }: { graphData: graphData }) {
 
 
 
+
+
   return (
       <NoSSRForceGraph
         ref={fgRef}
         graphData={graphData}
         numDimensions={3}
         forceEngine="d3"
+        // dagMode={'td'}
         d3AlphaDecay={0.03}
         d3VelocityDecay={0.45}
-        linkOpacity={0.5}
+        linkOpacity={0.1}
         linkDirectionalArrowLength={4}
         linkDirectionalArrowRelPos={0.5}
          nodeThreeObject={node => {
@@ -57,7 +61,6 @@ export default function ClimateGraph({ graphData }: { graphData: graphData }) {
           sprite.textHeight = 8;
           return sprite;
         }}
-
       />
   );
 }

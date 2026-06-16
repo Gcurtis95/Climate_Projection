@@ -24,6 +24,7 @@ export default function VisScene({graphData}: {graphData: graphData}){
 
     return(
         <div className={styles.sceneContainer}>
+        <div className={styles.Canvas}>
         <Canvas flat camera={{ position: [90, 0, 40], far: 6000 }}>
             <OrbitControls/>
             <ambientLight color={0xcccccc} intensity={Math.PI}/>
@@ -31,5 +32,12 @@ export default function VisScene({graphData}: {graphData: graphData}){
             <ClimateGraph graphData={graphData} />
         </Canvas>
         </div>
+
+        <div className={styles.legend}>
+            <p className={styles.tas}>Mean Temperature °C</p>
+            <p className={styles.hurs}>Near-surface relative humidity %</p>
+            <p className={styles.sfcWind}>Daily-mean near-surface wind speed m/s</p>
+        </div>
+        // </div>
     )
 }

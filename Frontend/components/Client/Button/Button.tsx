@@ -16,7 +16,7 @@ export default function Button({location, date} : userSelect){
 
     async function handleFetch(location: number[], date: PickerValue): Promise<void> {
         const [lon, lat] = location
-        const {month, year} = date
+        const {season, year} = date
 
 
 
@@ -29,13 +29,26 @@ export default function Button({location, date} : userSelect){
 
         const address = jsonLocation.result.features[0].properties.full_address
 
-        console.log(jsonWaterResponse.result.water)
+        console.log(address)
 
-        setIsItWater(jsonWaterResponse.result.water)
+        if(!address){
+            setIsItWater(false)
+
+        }
+
+        
 
 
-        if(!jsonWaterResponse.result.water){
-            router.push(`/visualisation/?lon=${lon}&lat=${lat}&month=${month}&year=${year}&address=${address}`) 
+        if (address) {
+        const url =
+            `/visualisation/?` +
+            `lon=${encodeURIComponent(lon)}` +
+            `&lat=${encodeURIComponent(lat)}` +
+            `&season=${encodeURIComponent(season)}` +
+            `&year=${encodeURIComponent(year)}` +
+            `&address=${encodeURIComponent(address)}`
+
+        router.push(url)
         }
 
     }

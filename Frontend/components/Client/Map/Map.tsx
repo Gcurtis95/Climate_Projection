@@ -2,8 +2,8 @@
 
 import styles from './styles.module.css'
 import {useRef, useEffect, useState, SetStateAction} from 'react'
-import mapboxgl from 'mapbox-gl'
-import 'mapbox-gl/dist/mapbox-gl.css';
+import maplibregl from 'maplibre-gl'
+import 'maplibre-gl/dist/maplibre-gl.css';
 
 
 
@@ -15,25 +15,34 @@ interface Props {
 
 export default function Map({setLocation}: Props){
 
-    const mapRef = useRef<mapboxgl.Map | null>(null)
+    const mapRef = useRef<maplibregl.Map | null>(null)
     const mapContainerRef = useRef<HTMLDivElement | null>(null)
 
     const [coordinates, setCoordinates] = useState<string[]>(['Longitude: 0', 'Latitude: 51.072']);
 
     useEffect(() => {
 
-        mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX
 
         if (mapContainerRef.current) {
-            mapRef.current = new mapboxgl.Map({
+            mapRef.current = new maplibregl.Map({
                 container: mapContainerRef.current,
-                style: 'mapbox://styles/mapbox/dark-v11',
+                style: 'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json',
                 center: [0, 51.072],
                 zoom: 2
             });
+            mapRef.current.on('style.load', () => {
+                if (mapRef.current) {
+                    mapRef.current.setProjection({
+                        type: 'globe', 
+                    });
+                }
+            });
+            
         }
 
-        const marker = new mapboxgl.Marker({
+
+
+        const marker = new maplibregl.Marker({
                 scale: 0.5,
                 color: "#FFFFFF",
                 draggable: true
