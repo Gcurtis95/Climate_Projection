@@ -2,6 +2,7 @@
 
 # dependencies
 /frontend-v2/node_modules
+/frontend-v2/app/design-test/
 /frontend-v2/.pnp
 /frontend-v2/.pnp.*
 /frontend-v2/.yarn/*
