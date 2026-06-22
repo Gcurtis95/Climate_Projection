@@ -1,0 +1,31 @@
+steps:
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'build'
+      - '-t'
+      - 'us-central1-docker.pkg.dev/climatechangeproject-477817/climate-backend/climate-backend:$COMMIT_SHA'
+      - './Backend'
+
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'push'
+      - 'us-central1-docker.pkg.dev/climatechangeproject-477817/climate-backend/climate-backend:$COMMIT_SHA'
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args:
+      - 'run'
+      - 'deploy'
+      - 'climate-backend'
+      - '--image'
+      - 'us-central1-docker.pkg.dev/climatechangeproject-477817/climate-backend/climate-backend:$COMMIT_SHA'
+      - '--region'
+      - 'us-central1'
+      - '--platform'
+      - 'managed'
+      - '--allow-unauthenticated'
+      - '--timeout'
+      - '3600'
+
+images:
+  - 'us-central1-docker.pkg.dev/climatechangeproject-477817/climate-backend/climate-backend:$COMMIT_SHA'

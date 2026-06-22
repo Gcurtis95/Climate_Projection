@@ -1,0 +1,10 @@
+name: backend-deploy
+description: Build and deploy backend on changes to Backend/
+filename: cloudbuild.yaml
+github:
+  owner: Gcurtis95
+  name: Climate_Projection
+  push:
+    branch: ^main$
+includedFiles:
+  - 'Backend/**'

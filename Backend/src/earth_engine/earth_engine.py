@@ -3,25 +3,39 @@ from utils.get_date import get_date, get_location, get_month
 import asyncio
 import pandas as pd
 import json
+from cachetools import TTLCache
 
-ee.Authenticate()
 ee.Initialize(project='climatechangeproject-477817')
+
+# Cache EE results for 24 hours — same location/season/year always returns identical data
+_ee_cache: TTLCache = TTLCache(maxsize=256, ttl=86400)
 
 
 def get_google_earth_data(location_date_data, model):
 
-    longitude, latitude = get_location(location_date_data)
+    cache_key = (
+        location_date_data["lon"],
+        location_date_data["lat"],
+        location_date_data["season"],
+        location_date_data["year"],
+        model,
+    )
+    if cache_key in _ee_cache:
+        print(f"EE cache hit: {cache_key}")
+        return _ee_cache[cache_key]
 
+    longitude, latitude = get_location(location_date_data)
 
     target_year = int(location_date_data["year"])
     start_year = target_year - 15
-    end_year = target_year + 14 
+    end_year = target_year + 14
 
+    # Two core months per season — reduces image count by ~33% vs three months
     seasons = {
-        "Winter": [12, 2],
-        "Spring": [3, 5],  
-        "Summer": [6, 8],  
-        "Autumn": [9, 11]  
+        "Winter": [1, 2],    # Jan–Feb (coldest core; avoids Dec year-boundary wrap)
+        "Spring": [3, 4],    # Mar–Apr
+        "Summer": [7, 8],    # Jul–Aug (peak heat)
+        "Autumn": [10, 11],  # Oct–Nov
     }
 
     selected_season = location_date_data["season"]
@@ -76,7 +90,7 @@ def get_google_earth_data(location_date_data, model):
     results = combined_reduced.getInfo()
 
     print(results)
-
+    _ee_cache[cache_key] = results
     return results
 
 

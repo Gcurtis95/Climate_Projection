@@ -1,4 +1,11 @@
 fastapi
 uvicorn
+pydantic
 earthengine-api
-python 3.12
+cachetools
+pandas
+python-dotenv
+chromadb
+openai
+google-genai
+langchain-openai

@@ -1,18 +1,19 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 # dependencies
-/Frontend/node_modules
-/Frontend/.pnp
-/Frontend/.pnp.*
-/Frontend/.yarn/*
-/Frontend/!.yarn/patches
-/Frontend/!.yarn/plugins
-/Frontend/!.yarn/releases
-/Frontend/!.yarn/versions
+/frontend-v2/node_modules
+/frontend-v2/.pnp
+/frontend-v2/.pnp.*
+/frontend-v2/.yarn/*
 /chromaDB_scripts/env/
 /chromaDB_scripts/.env
 /chromaDB_scripts/documents/
+/chromaDB_scripts/Climate Documents/
+/chromaDB_scripts/Model Evaluation Papers/
+/chromaDB_scripts/processed_files.json
+/ref images/
 /Backend/env/
+/Backend/venv/
 /Backend/.env
 /Backend/__pycache__/
 env*
@@ -22,8 +23,8 @@ env*
 
 # next.js
 /.next/
-/Frontend/.next/
-/Frontend/out/
+/frontend-v2/.next/
+/frontend-v2/out/
 
 # production
 /build
@@ -38,14 +39,17 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files (can opt-in for committing if needed)
+# env files
 .env*
 __pycache__*
-
 
 # vercel
 .vercel
 
 # typescript
-/Frontend/*.tsbuildinfo
-/Frontend/next-env.d.ts
+/frontend-v2/*.tsbuildinfo
+/frontend-v2/next-env.d.ts
+
+.claude
+CLAUDE.md
+/ref_images

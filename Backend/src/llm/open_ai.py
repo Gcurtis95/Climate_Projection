@@ -1,156 +1,117 @@
 from openai import OpenAI
 from dotenv import load_dotenv
+from llm.deltas import format_delta_brief
 import os
-from rag.chroma_db import retrieval_vector_db
 import json
 
 load_dotenv()
 
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+client = OpenAI(api_key=OPENAI_API_KEY)
 
-
-client = OpenAI(api_key=OPENAI_API_KEY,)
 
 def open_ai_get_completion(prompt, system_prompt, model):
-
     try:
-    
         response = client.responses.create(
-        model=model,
-        instructions=system_prompt,
-        input=prompt,
+            model=model,
+            instructions=system_prompt,
+            input=prompt,
         )
     except Exception as e:
         raise Exception("status_code=500") from e
-
-
     return response
 
 
+def summarise(web_task, rag_task, projections, address, deltas):
+    # Flatten raw Chroma chunks: list[list[str]] → single joined string
+    if isinstance(rag_task, list):
+        flat_chunks = [
+            chunk
+            for sublist in rag_task
+            for chunk in (sublist if isinstance(sublist, list) else [sublist])
+        ]
+        rag_text = "\n\n---\n\n".join(flat_chunks)
+    else:
+        rag_text = str(rag_task)
 
-# def rag_query(projections, address):
-
-#     prompt = f"""
-    
-#     <context>
-#     Here is the data returned from google earth engine which includes projected data for the specific year and month 
-#     as well the baseline for the specific region from 1950 to 2014.
-#     this is the address and region of the use {address["address"]}
-#     {projections}
-#     <context>
-
-#     """
-
-
-#     system_prompt = f"""
-#             You are an assistant responsible for generating precise, well-structured retrieval queries for a ChromaDB vector database containing open-access research papers related to the NASA/GDDP-CMIP6 climate dataset.
-
-#             For each request, you receive:
-
-#             Parsed climate data from Google Earth Engine, including historical baselines (1950–2014) and future projections for a specific location, month, and year.
-#             A user-provided location (address), along with the processed projection values for key variables such as temperature, precipitation, humidity, radiative fluxes, and wind.
-#             Your task is to:
-
-#             Extract the scientifically relevant signals from the supplied GEE outputs (e.g., projected temperature anomalies, precipitation trends, extreme-event indicators). Transform 
-#             these signals into a targeted, high-quality search query suitable for vector retrieval. The generated query should help retrieve research papers that can support a detailed impact 
-#             assessment for that region and timeframe, including expected climatic changes, risks, and environmental or socio-economic implications.   When creating the search query: Focus on 
-#             variables present in the projections (e.g., tas, pr, rlds, rsds, sfcWind, humidity). Include relevant temporal context (selected month, selected year, baseline comparison).    
-#             Include spatial context (location name, region type, latitude/longitude). Use scientific terminology consistent with CMIP6 and GDDP literature.
-#             Avoid generic or broad queries; aim for specificity that maximises retrieval relevance. Your output should be:
-#             A single, compact search query string optimised for vector semantic search.
-#             No explanation or meta-commentary—only the query.
-#     """ 
-
-#     model = "gpt-4.1"
-
-
-#     vector_db_query = open_ai_get_completion(prompt, system_prompt, model)
-
-#     print(vector_db_query.output_text)
-
-    
-
-#     return retrieval_vector_db(vector_db_query)
-
-
-
-
-def summarise(web_task, projections, address):
+    delta_brief = format_delta_brief(deltas)
 
     prompt = f"""
-    <Context>
-    Here are the projected and baseline data from google earth engine {projections}, 
-    Here is the data returned from the gemini web search for NASA/GDDP-CMIP6 dataset in {address["address"]}. 
+<Context>
+CMIP6 model (copy exactly into model_name): {address.get("model", "unknown")}
+Location: {address["address"]}
+Coordinates (copy exactly into location.lat / location.lon — do NOT round or alter):
+  lat: {address["lat"]}
+  lon: {address["lon"]}
+Season: {address["season"]} | Target year: {address["year"]} | Scenario: SSP2-4.5
+Baseline period: 1985–2015 | Projection window: {address["year"]} ±15 years
 
-    here are the bands
+PRE-COMPUTED CLIMATE DELTAS — use these directly, do not re-derive from raw values:
+{delta_brief}
 
-    Bands
+Notes on uncertainty: the σ values above are 30-year standard deviations.
+If σ ≥ |delta|, the signal is within natural variability — flag it as uncertain in your narrative.
+If σ < |delta| / 2, the signal is robust — state it with confidence.
 
-    Name	Units	        Min	        Max	Pixel   Size	    Description
-    hurs	%	            -101.85*	179.44*	    meters	    Near-surface relative humidity. 
-    huss	Mass fraction	-0.007*	    11.76*	    meters      Near-surface specific humidity.
-    pr	   kg/m^2/s	        0*	        0.0083*	    meters	    Precipitation (mean of the daily precipitation rate)
-    rlds	W/m^2	        -481.17*	908.96*	    meters	    Surface downwelling longwave radiation  
-    rsds	W/m^2	        -702710*	553087*	    meters	    Surface downwelling shortwave radiation
-    sfcWind	m/s	            -4.98*	28.29*	        meters	    Daily-mean near-surface wind speed
-    tas	    K	            192.15*	336.94*	        meters	    Daily near-surface air temperature. 
-    tasmin	K	            163.66*	334.92*	        meters	    Daily minimum near-surface air temperature. 
-    tasmax	K	            202.09*	352.77*	        meters	    Daily maximum near-surface air temperature. 
+FULL RAW PROJECTIONS (for reference only):
+{projections}
 
-    * estimated min or max value
+Band units reference:
+  hurs    %           near-surface relative humidity
+  sfcWind m/s         daily-mean wind speed
+  tas     K           mean air temperature  [display as °C = K − 273.15]
+  tasmin  K           daily minimum temperature
+  tasmax  K           daily maximum temperature
+  pr      kg/m²/s     precipitation rate
 
+WEB SEARCH FINDINGS:
+{web_task}
 
+RAG MODEL BIAS / LESSONS LEARNED
+(raw research paper excerpts — extract bias and limitation context relevant to this model and region):
+{rag_text}
 
-    here is the result from the websearch 
+Instructions for using the RAG excerpts:
+- Populate the "citations" array where paper titles or authors are identifiable in the chunks
+- If the model is known to over- or under-predict a specific variable in this region, qualify the
+  corresponding delta in "overview.summary" and "impacts.bullets" accordingly
+- Do not cite a source you cannot identify from the text
+</Context>
 
-    {web_task}
+<Response>
+Return ONLY a JSON object conforming exactly to the schema below.
+No markdown. No explanation. No extra keys. No schema repetition.
 
-    <Context>
-
-    <Response>
-
-    You MUST return a JSON object that conforms to the schema below.
-
-    DO NOT include the schema itself.
-    DO NOT include explanations.
-    DO NOT include markdown.
-    DO NOT include keys not defined in the schema.
-
-    Return ONLY the JSON object.                
-
-    {JSON_SCHEMA}
-
-
-
-
-    <Response>
+{JSON_SCHEMA}
+</Response>
     """
 
-    system_prompt = f""" You are a climate-science research assistant specialised in interpreting Google Earth Engine outputs from the NASA/GDDP-CMIP6 dataset
-    FOR scenario ssp245.
-    You will receive:
-                a web search anaylisis based on the data. 
-                a retrieval based search from a vector data base full of open ccess research papers on the subject.
-                A location (address and coordinates)
-                NASA/GDDP-CMIP6 projection values for a specific month and year
-                Historical baselines (1950–2014) for the same region
-                Core climate variables (e.g., tas, tasmax, pr, humidities, wind, radiative fluxes)
-    your job is to:
-                summarise all of this infomation into a response that indicates the potential impacts on the given region for the given date
+    system_prompt = """You are a senior climate-science research analyst producing structured
+regional impact assessments from CMIP6 projections under SSP2-4.5.
 
+You receive:
+  - Pre-computed climate deltas with uncertainty (σ) values — USE THESE as your primary signal
+  - Web search findings with regional literature and sector impacts
+  - RAG excerpts covering known model biases and evaluation results
 
+Your output must:
+1. Quantify every claim — use the delta values explicitly (e.g., "a 2.4°C warming signal")
+2. Distinguish robust signals (σ < delta/2) from uncertain ones (σ ≥ delta)
+3. Incorporate model bias caveats from the RAG excerpts where they change interpretation
+4. Populate data_table rows from the pre-computed deltas — do not invent values.
+   For precipitation (pr): set baseline.value and projected.value to the absolute rates
+   in mm/day (shown in the delta table above as "baseline X mm/day → projected Y mm/day").
+   Set display_format to "mm_day". Do NOT use the % change as the value.
+5. Populate location exactly from the coordinates provided above — lat and lon must match exactly.
+6. Set shader_params based on the projected absolute climate character of this location
+   (not the direction of change, but what kind of climate it will be)
+6. Write overview.summary as 3–4 sentences, grounded in specific numbers
+7. Write impacts.bullets as specific, sector-named consequences — not generic statements
 
-    """
+Do not fabricate data. Do not ignore σ values. Do not produce generic climate boilerplate."""
 
-    model = "gpt-4.1"
-
-    summerised_analysis = open_ai_get_completion(prompt, system_prompt, model)
- 
-
-    
-
-    return json.loads(summerised_analysis.output_text)
-
+    response = open_ai_get_completion(prompt, system_prompt, "gpt-4.1")
+    return json.loads(response.output_text)
 
 
 JSON_SCHEMA = """
@@ -160,9 +121,14 @@ JSON_SCHEMA = """
   "title": "ClimateSummary",
   "type": "object",
   "additionalProperties": false,
-  "required": ["title", "overview", "location", "impacts", "data_table"],
+  "required": ["title", "model_name", "overview", "location", "impacts", "data_table", "shader_params"],
   "properties": {
     "title": { "type": "string", "minLength": 5 },
+
+    "model_name": {
+      "type": "string",
+      "description": "The CMIP6 model used for this projection — copy exactly from the model provided in context."
+    },
 
     "overview": {
       "type": "object",
@@ -176,6 +142,18 @@ JSON_SCHEMA = """
           "maxItems": 6,
           "items": { "type": "string" }
         }
+      }
+    },
+
+    "location": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "country_region", "lat", "lon"],
+      "properties": {
+        "name": { "type": "string", "description": "Locality name (e.g. 'Denmark Hill', 'Manhattan')" },
+        "country_region": { "type": "string", "description": "Country or broader region (e.g. 'United Kingdom', 'California, USA')" },
+        "lat": { "type": "number", "description": "Latitude — copy exactly from the coordinates provided, do not round" },
+        "lon": { "type": "number", "description": "Longitude — copy exactly from the coordinates provided, do not round" }
       }
     },
 
@@ -195,6 +173,27 @@ JSON_SCHEMA = """
           "type": "array",
           "minItems": 3,
           "items": { "type": "string" }
+        }
+      }
+    },
+
+    "shader_params": {
+      "type": "object",
+      "description": "Normalised visual parameters (0.0–1.0) encoding the climate character of this projection, used to tint and warp the background shader on the results page",
+      "additionalProperties": false,
+      "required": ["warmth", "turbulence", "aridity"],
+      "properties": {
+        "warmth": {
+          "type": "number", "minimum": 0, "maximum": 1,
+          "description": "0=cold/polar/sub-zero, 0.5=temperate, 1=hot/tropical/desert. Derive from projected tas/tasmax relative to global climate norms, not just the baseline delta."
+        },
+        "turbulence": {
+          "type": "number", "minimum": 0, "maximum": 1,
+          "description": "0=stable/calm (low wind, steady precip), 1=highly variable/stormy (large sfcWind change, extreme precipitation events projected). Derive from sfcWind and pr variability."
+        },
+        "aridity": {
+          "type": "number", "minimum": 0, "maximum": 1,
+          "description": "0=wet/humid (rainforest, monsoon, high hurs and pr), 1=arid/dry (desert, steppe, low pr and hurs). Derive from projected pr and hurs absolute values and their change direction."
         }
       }
     },
@@ -235,11 +234,10 @@ JSON_SCHEMA = """
         "display_format": {
           "type": "string",
           "description": "Optional formatting hint for UI",
-          "enum": ["number", "scientific", "percent", "celsius", "kelvin", "w_m2", "m_s", "kg_m2_s"]
+          "enum": ["number", "scientific", "percent", "celsius", "kelvin", "w_m2", "m_s", "kg_m2_s", "mm_day"]
         }
       }
     },
-
 
     "valueWithOptionalRaw": {
       "type": "object",
@@ -254,5 +252,3 @@ JSON_SCHEMA = """
   }
 }
 """
-
-

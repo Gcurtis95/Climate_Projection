@@ -1,0 +1,51 @@
+@import "tailwindcss";
+
+@theme inline {
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+/* Terminal range input — Scientific Terminal home page */
+.terminal-range {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 1px;
+  background: rgba(232, 230, 223, 0.2);
+  outline: none;
+  cursor: pointer;
+  display: block;
+}
+.terminal-range::-webkit-slider-runnable-track {
+  -webkit-appearance: none;
+  background: rgba(232, 230, 223, 0.2);
+  height: 1px;
+  border: none;
+}
+.terminal-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 7px;
+  height: 7px;
+  background: #e8e6df;
+  cursor: pointer;
+  border-radius: 0;
+  margin-top: -3px;
+}
+.terminal-range::-moz-range-track {
+  background: rgba(232, 230, 223, 0.2);
+  height: 1px;
+  border: none;
+}
+.terminal-range::-moz-range-thumb {
+  width: 7px;
+  height: 7px;
+  background: #e8e6df;
+  cursor: pointer;
+  border-radius: 0;
+  border: none;
+}
+.terminal-range::-moz-range-progress {
+  background: rgba(232, 230, 223, 0.2);
+  height: 1px;
+}

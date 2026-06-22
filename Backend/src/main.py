@@ -1,13 +1,12 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI
+from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
-from earth_engine.earth_engine import get_google_earth_data
 from llm.llm_main import agent_actions
-import json, asyncio
-from llm.gemini import web_search, model_select
-
+from llm.model_select import model_select
+import json
 
 app = FastAPI()
- 
+
 
 class Data(BaseModel):
     lon: str
@@ -16,51 +15,16 @@ class Data(BaseModel):
     year: str
     address: str
 
+
 @app.post("/climate")
 async def climate_projection(data: Data):
-
     location_date_data = data.model_dump()
-
-
     model = model_select(location_date_data)
+    location_date_data["model"] = model
+    print(f"Model selected: {model} for {location_date_data}")
 
+    async def event_stream():
+        async for event in agent_actions(location_date_data, model):
+            yield json.dumps(event) + "\n"
 
-    print(location_date_data)
-
-
-    projections = get_google_earth_data(location_date_data, model)
-   
-    print(projections)
-
-
-    # agent_task = async_agent_actions(projections, location_date_data)
-    # get_projected_time_series_task = async_get_projected_time_series(location_date_data)
-
-    # agent_result, time_series = await asyncio.gather(agent_task, get_projected_time_series_task)
-
-
-
-#     agent_result = dummyAgent()
-
-    agent_result = await agent_actions(projections, location_date_data, model)
-    # print(agent_result)
-    # result = {"data":time_series, "agent":agent_result}
-   
-
-    return 
-
-
-# async def async_agent_actions(projections, location_date_data):
-#      return await agent_actions(projections, location_date_data)
-
-
-# async def async_get_projected_time_series(location_date_data):
-#      return await asyncio.to_thread(get_projected_time_series,location_date_data)
-
-  
-
-
-
-
-
-     
+    return StreamingResponse(event_stream(), media_type="application/x-ndjson")
