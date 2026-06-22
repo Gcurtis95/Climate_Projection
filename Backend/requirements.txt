@@ -3,6 +3,7 @@ uvicorn
 pydantic
 earthengine-api
 cachetools
+tenacity
 pandas
 python-dotenv
 chromadb
