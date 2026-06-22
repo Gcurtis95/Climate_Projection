@@ -16,7 +16,6 @@
 /Backend/venv/
 /Backend/.env
 /Backend/__pycache__/
-env*
 
 # testing
 /coverage
